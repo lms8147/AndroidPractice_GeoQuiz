@@ -10,4 +10,5 @@ Practice Code and Notes of GeoQuiz
 ## Kotlin Notes
 - [Move](./notes/kotlin.md)
 
+## MAINTAINERS
 * MinSang, Lee - https://it00.tistory.com
