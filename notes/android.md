@@ -192,3 +192,92 @@
 
 ### refactoring
 - 중복 기능은 리팩토링해서 함수로 추출한다.
+
+
+# Chapter3
+## Android LifeCycle
+### Nonexistent
+- Activity가 아직 실행되지 않았거나 back 버튼 등에 의해 Destroy된 상태를 나타낸다.
+- Destroy 된 경우 "destroyed" 상태라고도 한다.
+- 메모리에 인스턴스가 없으며 유저가 상호작용 할 수 있는 어떤 view도 없는 상태이다.
+
+### Stopped
+- Activity가 인스턴스화 되어 메모리에 존재하나 화면에는 보이지 않는 상태를 나타낸다.
+- Stopped 상태는 application의 화면이 회전 중이거나 view가 완전히 가려질때마다(다른 Activity를 전체화면 포그라운드로 전환하거나 Home 버튼을 누르거나 Task 전환 화면에 진입할때) 발생한다.
+
+### Paused
+- Activity가 포그라운드로 활성화되진 않았지만 View가 전체 혹은 부분적으로 보여지는 상태를 나타낸다.
+  - Dialog가 뜨거나 투명한 Activity가 Top에 존재할때 View가 부분적으로 보여지나 포그라운드로 활성화 되지 않아 Paused 상태로 전환된다.
+  - 멀티 윈도우 모드로 두개의 Activity의 View가 모두 보여지나 포그라운드로 활성화되지 않은 Activity는 Paused 상태로 전환된다.
+
+### Resumed
+- Activity가 포그라운드로 활성화되어 모두 보여지며 메모리에 인스턴스가 존재하는 상태를 나타낸다.
+- 해당 상태에서는 사용자가 Activity를 통해서 UI작업을 할 수 있다.
+- OS 전체에서 단 하나의 Activity만 resumed 상태로 전환 될 수 있다.
+
+## LifeCycle Callbacks
+- Activity에는 LifeCycle의 주요 상태 변화가 완료될 때마다 특정 작업을 수행할 수 있도록 Callback 함수를 제공한다.
+- OS는 Activity의 상태가 변화될 때마다 적절한 LifeCycle Callback 함수를 호출한다.
+- Application 로직상에서 직접 호출하는 경우는 없다.
+- LifeCycle Callbacks 함수 예시
+  - Activity.onCreate(Bundle?) 함수는 LifeCycle Callback으로 통상적으로 하기 요구조건을 구현한다.
+    - widget들이 inflate되어 화면에 보여야한다.
+    - inflate된 widget들의 레퍼런스를 가져온다.
+    - widget을 통해 유저와 상호작용 할 수 있도록 widget에 이벤트 리스너를 등록한다.
+    - 외부 Model 데이터와 연결한다.
+
+## Additional Knowledge
+### Callback & Listener
+- Callback과 Listener는 역할 위임의 성격이 강하고 호출자가 상세 구현 내용을 모를때 사용하기에 비슷한 패턴으로 보이지만 몇가지 차이가 있다.
+#### Callback
+- 호출자는 알림 이상의 목적이 있어 Callback 함수를 호출한다.
+- Callback 함수 실행 결과가 호출자에게 영향을 끼칠 수 있다.
+- 예시
+  - onCreate()
+    - 호출자 : Callback 함수야. activity 생성했으니까 작업 좀 해줘.
+    - Callback : 레이아웃 inflate 해서 인스턴스 만들어주고 버튼에 이벤트도 달아줄께.
+  - onMoveCallBack()
+    - 호출자 :  Callback 함수야. 나 움직일껀데 그전에 작업 좀 해줘.
+    - Callback : 장애물 있으면 치워주고 문에 부딛힐꺼 같으면 열어줄께.
+#### Listener
+- 호출자는 단순 알림 목적으로 Listener 함수를 호출한다.
+- Listener 함수 실행 결과가 호출자에게 영향을 끼치지 않는다.
+- 예시
+  - OnClickListener()
+    - 호출자 : Listener 함수야. 클릭 이벤트 발생했어.
+    - Listener : 이벤트 발생했네. Toast 보여줘야지.
+
+  - onDrawCanvasListener()
+    - 호출자 : Listener 함수야. 나 캔버스에 그림 그렸는데 필요하면 가져다써
+    - Listener : 그림 그려졌네. 복사해서 전시해야지.
+
+### Android's Process and Thread
+- 어플리케이션 컴포넌트가 시작될 때 어플리케이션의 어떤 컴포넌트가 실행되지 않은 상태라면 Android 시스템은 새로운 리눅스 프로세스를 단일 스레드 상에서 실행한다.
+- 기본적으로 동일 어플리케이션의 모든 컴포넌트는 동일 프로세스와 동일 스레드(Main 스레드)에서 구동된다.
+- 어플리케이션 컴포넌트가 실행될 때 다른 컴포넌트에 의해 해당 어플리케이션의 프로세스가 이미 실행되었다면 동일 프로세스의 동일 Main 스레드에서 해당 컴포넌트가 실행된다.
+- 동일 어플리케이션 내 여러 컴포넌트들을 각기 다른 프로세스와 스레드로 분리하여 실행하는 것도 가능하다.
+- Manifest에서 특정 컴포넌트가 어떤 프로세스에서 실행할지 제어할 수 있다.
+
+### 안드로이드 메모리 누수
+- Android의 경우 통상적으로 어플리케이션 화면 지연을 방지하기 위해 로직 지연이 생길 수 있는 네트워크 작업이나 Bitmap 가상 랜더링 작업을 백그라운드 스레드에서 하고 최종 결과를 UI에 반영하는 작업을 메인 스레드에서 하도록 구현한다.
+  - UI 반영을 위해 백그라운드 스레드에서 메인 스레드의 일부 인스턴스를 참조하는 경우가 있는 이로 인해 메인 스레드에서 Activity Destory 시 메모리 누수가 발생할 수 있다. 이 경우 WeakReference를 사용해서 메모리 누수를 방지해야 한다.
+- Android에서는 Application Level의 작업을 위해 Context 인스턴스를 참조로 가지도록 구현하는 경우가 있다.
+  - Context는 구현체의 LifeCycle에 따라 Destory 될경우 인스턴스가 GC되어야 하는데 특정 컴포넌트가 해당 Context를 참조하고 있을 경우 메모리 누수가 발생할 수 있다. 이 경우 WeakReference를 사용하거나 가능한 경우 Application Context를 사용하여 메모리 누수를 방지해야 한다.
+
+#### 메모리 누수(Memory Leak)
+- 모든 인스턴스들은 unreachable 상태가 될 경우 Garbage Collector에 의한 메모리 회수 대상이 된다.
+  - Root Set
+    - 실행 중인 메소드의 지역 변수와 매개변수
+    - Static 영역에 있는 정적 변수
+  - reachable : Root Set에서 인스턴스까지의 경로가 있는 경우
+  - unreachable : Root Set에서 인스턴스까지의 경로가 없는 경우
+- 인스턴스의 역할을 다해 Garbage Collector에 의해 메모리 회수가 되어야 하나 reachable 상태이어서 Garbage Collection 되지 못해 불필요한 메모리 부하가 생기는 현상을 얘기한다.
+- 하기 조건을 만족할 경우 메모리 누수가 발생 할 수 있다.
+  - 동일 프로레스에서 서로 상이한 스레드 간 공유하는 객체 A가 존재한다.
+  - 객체 A의 Root Set은 특정 스레드에서 실행된 메소드의 지역 변수 혹은 매개변수이다.
+- 해결 방법 : 타 스레드에서 참조 시 WeakReference를 사용해 불필요한 unreachable 대상이 될 수 있도록 구현한다.
+
+#### Android's Context
+- Android Application의 환경정보를 담고 있는 객체이다.
+- 각 context는 하위 구현체의 LifeCycle에 따라 GC될 수 있다.
+- 크게 Application Context, Activity Context, Service Context, BackupAgent Context로 나뉜다.
