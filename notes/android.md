@@ -137,7 +137,7 @@
 
 # Chapter2
 
-## MVC
+## MVC Concept
 - Android는 MVC 아키텍처 기반으로 설계되어 있다.
   - MVC는 Android application의 presentation layer에서 주로 사용되는 디자인 패턴이다.
   - application의 기능이 다양해져서 복잡해 질 수록 가독성과 유지보수성을 위해 OOP 원칙에 따른 적절한 객체 역할 분리가 필요한데 디자인 패턴은 정형화된 역할 분리가 가능하게 도와준다.
@@ -172,3 +172,23 @@
 
 #### implementation
 - android에서는 주로 Activity나 Fragment에서 controller 역할을 한다.
+
+## MVC implementation
+
+### tools
+- tools 네임스페이스를 사용하면 Android Studio 상에서 디자인, 컴파일 시 유용한 속성을 지정할 수 있다.
+  - 레퍼런스 : https://developer.android.com/studio/write/tool-attributes
+- tools 네임스페이스 사용 시 하기 xml 네임스페이스를 RootLayout에 추가해야한다.
+  - xmlns:tools="http://schemas.android.com/tools"
+- tools attributes들은 Runtime 시 해석되지 않는다.
+- tools:text
+  - View에서 해당 attribute를 사용하면 Rumtime시에는 보이지 않지만 Android Studio -> Design 탭에서는 볼 수 있도록 설정 할 수 있다.
+
+### String Resources
+- string resource에서 제어문자 표기를 위해선 문자앞에 \ 표기를 해야한다.
+
+### keeping data
+- 현재는 acitivty의 list property로 기생성된 데이터를 보존하지만 추후 더 나은 방법으로 데이터 관리 예정이다.
+
+### refactoring
+- 중복 기능은 리팩토링해서 함수로 추출한다.
