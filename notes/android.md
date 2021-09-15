@@ -192,3 +192,15 @@
 
 ### refactoring
 - 중복 기능은 리팩토링해서 함수로 추출한다.
+
+### 개선 point
+- 리팩토링
+  - 추후 다항 다중 선택 등 문제 형태가 변경됨에 따라 정답 비교 로직이 변경 될 수 있으므로 메소드 추출 및 역할 위임 필요
+    - Question 객체에 정답 체크 역할 위임
+      - Question check an answer itself.
+- 테스트 케이스 작성
+  - 요구사항에 맞게 로직이 구현되었는지 단위 테스트 작성
+    - 입력된 답과 문제의 답이 일치하면 정답으로 판정한다.
+      - checkAnswer_with_same_answer_is_correct_answer
+    - 입력된 답과 문제의 답이 불일치하면 오답으로 판정한다.
+      - checkAnswer_with_different_answer_is_wrong_answer
