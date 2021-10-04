@@ -281,3 +281,9 @@
 - Android Application의 환경정보를 담고 있는 객체이다.
 - 각 context는 하위 구현체의 LifeCycle에 따라 GC될 수 있다.
 - 크게 Application Context, Activity Context, Service Context, BackupAgent Context로 나뉜다.
+
+in a moment you are going to adda viewmodel class to your project.
+the viewmodel class comes from an android jetpack library called lifecycle extensions, one of many libraries
+ that you will use thor
+
+- 

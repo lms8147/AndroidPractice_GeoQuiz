@@ -109,3 +109,78 @@ val jane = User("Jane", 35)
 val (name, age) = jane
 println("$name, $age years of age")
 ```
+
+## Compile time constants
+- read only property 에 대해 compile time에 rvalue를 특정할 수 있을 경우 사용한다.
+- const 키워드 사용시 compile time constant임을 명시한다.
+- top level property, object declaration, companiion object의 property 이어야 한다.
+- rvalue는 String이거나 원시타입 이어야한다.
+- getter를 커스텀할 수 없다.
+
+## 'by' keywork
+- proxy 패턴을 위한 형식적인(boilerplate) 코드 생략을 지원한다.
+### Delegation
+- 객체 함수의 proxy 사용에 대한 boilerplate 코드 생략을 지원한다.
+```kotlin
+interface Base {
+    fun print()
+}
+
+class BaseImpl(val x: Int) : Base {
+    override fun print() { print(x) }
+}
+
+class Derived(b: Base) : Base by b
+
+fun main() {
+    val b = BaseImpl(10)
+    Derived(b).print()
+}
+```
+### Delegated properties
+- property의 getter 함수 proxy 사용에 대한 boilerplate 코드 생략을 지원한다.
+- lazy
+```kotlin
+val lazyValue: String by lazy {
+    println("computed!")
+    "Hello"
+}
+
+fun main() {
+    println(lazyValue)
+    println(lazyValue)
+}
+```
+- Observable
+```kotlin
+import kotlin.properties.Delegates
+
+class User {
+    var name: String by Delegates.observable("<no name>") {
+        prop, old, new ->
+        println("$old -> $new")
+    }
+}
+
+fun main() {
+    val user = User()
+    user.name = "first"
+    user.name = "second"
+}
+```
+- map
+```kotlin
+class User(val map: Map<String, Any?>) {
+    val name: String by map
+    val age: Int     by map
+}
+
+fun main() {
+    val user = User(mapOf(
+        "name" to "John Doe",
+        "age"  to 25
+    ))
+    println(user.name) // Prints "John Doe"
+    println(user.age)  // Prints 25
+}
+```
